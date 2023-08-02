@@ -1,0 +1,18 @@
+{
+    "name": "cucarachas/tec-vies",
+    "require": {
+        "dragonbe/vies": "^2.3",
+        "guzzlehttp/guzzle": "^7.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cucarachas\\TecVies\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "cucarachas",
+            "email": "georgeldimitrakis@gmail.com"
+        }
+    ]
+}
