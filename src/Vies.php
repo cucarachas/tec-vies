@@ -1,15 +1,16 @@
 <?php
 
-namespace Cucarachas\TecVies;
+namespace Tec\Vat;
 
-use DragonBe\Vies\Vies;
+use DragonBe\Vies\CheckVatResponse;
+use DragonBe\Vies\Vies as DragonBeVies;
 use DragonBe\Vies\ViesException;
 use DragonBe\Vies\ViesServiceException;
 
 /**
  *
  */
-class TecVies
+class Vies
 {
     /**
      * @var Vies
@@ -21,13 +22,13 @@ class TecVies
      */
     public function __construct()
     {
-        $this->vies = new Vies();
+        $this->vies = new DragonBeVies();
     }
 
     /**
      * @param $countryCode
      * @param $vatNumber
-     * @return \DragonBe\Vies\CheckVatResponse|string
+     * @return CheckVatResponse|string
      */
     public function validateVat($countryCode, $vatNumber)
     {

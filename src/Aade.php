@@ -1,12 +1,12 @@
 <?php
 
-namespace Cucarachas\TecVies;
+namespace Tec\Vat;
 
-use Cucarachas\TecVies\service\SoapService;
-use Cucarachas\TecVies\utils\StdConverter;
+use Tec\Vat\service\SoapService;
+use Tec\Vat\utils\StdConverter;
 use Exception;
 
-class TecAade
+class Aade
 {
     private SoapService $soapService;
 

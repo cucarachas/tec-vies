@@ -1,6 +1,6 @@
 <?php
 
-namespace Cucarachas\TecVies\service;
+namespace Tec\Vat\service;
 
 use SoapClient;
 use SoapHeader;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cucarachas\TecVies\utils;
+namespace Tec\Vat\utils;
 
 class StdConverter
 {
