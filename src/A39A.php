@@ -2,20 +2,20 @@
 
 namespace Tec\Vat;
 
+use Exception;
 use stdClass;
 use Tec\Vat\adapter\SoapAdapter;
 use Tec\Vat\exceptions\AadeException;
 use Tec\Vat\utils\StdConverter;
-use Exception;
 
-class Aade
+class A39A
 {
-    private $wsdl = 'https://www1.gsis.gr/wsaade/RgWsPublic2/RgWsPublic2?WSDL';
+    private $wsdl = 'https://www1.gsis.gr/wsaade/VtWs39aFPA/VtWs39aFPA?WSDL';
     private $methods = [
-        'rgWsPublic2AfmMethod'
+        'vt39afpaSu1GetVatflag'
     ];
     private $headers = [
-        'namespace' => 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+        'namespace' => 'http://www.w3.org/2003/05/soap-envelope',
         'name'      => 'Security',
     ];
 
@@ -36,7 +36,7 @@ class Aade
      * @return mixed
      * @throws AadeException
      */
-    public function validateVat($vatCalledFor, $vatCalledBy)
+    public function hasNormalVatSystem($vatCalledFor, $vatCalledBy)
     {
         try {
             $response = $this->soapAdapter
@@ -47,7 +47,7 @@ class Aade
 
             $reponseToArray = StdConverter::stdToArray($response);
 
-            return $reponseToArray;
+            return self::checkVatSystem($reponseToArray);
 
         } catch (Exception $e) {
             throw new AadeException($e->getMessage());
@@ -67,17 +67,28 @@ class Aade
     }
 
     /**
-     * @param $vatCalledBy
      * @param $vatCalledFor
-     * @return array[]
+     * @param $vatCalledBy
+     * @return array
      */
-    private function getBody($vatCalledBy, $vatCalledFor)
+    private function getBody($buyerVat, $supplierVat)
     {
         return [
-            'INPUT_REC' => [
-                'afm_called_by' => $vatCalledBy,
-                'afm_called_for' => $vatCalledFor
+            'SU1_IN_REC' => [
+                'supl_afm'       => $supplierVat,
+                'buyer_afm'      => $buyerVat,
+                'as_on_datetime' => date('Y-m-d\TH:i:s\Z')
             ]
         ];
     }
+
+    /**
+     * @param $array
+     * @return bool
+     */
+    private function checkVatSystem($array)
+    {
+        return $array['result']['vt_ws_39afpa_su1_result_rtType']['su1_out_rec']['buyer_normal_vat_system'] == 'Y';
+    }
+
 }

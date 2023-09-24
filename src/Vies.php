@@ -7,9 +7,6 @@ use DragonBe\Vies\Vies as DragonBeVies;
 use DragonBe\Vies\ViesException;
 use DragonBe\Vies\ViesServiceException;
 
-/**
- *
- */
 class Vies
 {
     /**
@@ -17,9 +14,6 @@ class Vies
      */
     private $vies;
 
-    /**
-     * @param Vies $vies
-     */
     public function __construct()
     {
         $this->vies = new DragonBeVies();
@@ -29,13 +23,14 @@ class Vies
      * @param $countryCode
      * @param $vatNumber
      * @return CheckVatResponse|string
+     * @throws exceptions\ViesException
      */
     public function validateVat($countryCode, $vatNumber)
     {
         try{
             return $this->vies->validateVat($countryCode, $vatNumber);
         }catch (ViesException|ViesServiceException $e){
-            return $e->getMessage();
+            throw new exceptions\ViesException($e->getMessage());
         }
     }
 
