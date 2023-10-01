@@ -32,6 +32,10 @@ class A39AMapper
                         'datetime'                       => $ar['su2_out_rec']['as_on_datetime']
                     ]
                 ];
+            case 'createMandatoryTransaction':
+                return [
+
+                ];
             default:
                 return null;
         }
