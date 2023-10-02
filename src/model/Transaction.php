@@ -20,7 +20,6 @@ class Transaction
     private $transactionTotalAmount;
     private $transactionTotalVat;
     private $transactionNotes;
-    private $lineItems;
 
     /**
      * @param mixed $supplierAfm
@@ -150,14 +149,6 @@ class Transaction
         $this->transactionNotes = $transactionNotes;
     }
 
-    /**
-     * @param mixed $lineItems
-     */
-    public function setLineItems($lineItems): void
-    {
-        $this->lineItems = $lineItems;
-    }
-
     public function toArray() {
         return [
             'supplier_afm' => $this->supplierAfm,
@@ -175,8 +166,7 @@ class Transaction
             'transaction_total_quantity' => $this->transactionTotalQuantity,
             'transaction_total_amount' => $this->transactionTotalAmount,
             'transaction_total_vat' => $this->transactionTotalVat,
-            'transaction_notes' => $this->transactionNotes,
-            'line_items' => $this->lineItems
+            'transaction_notes' => $this->transactionNotes
         ];
     }
 
