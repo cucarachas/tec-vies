@@ -151,22 +151,22 @@ class Transaction
 
     public function toArray() {
         return [
-            'supplier_afm' => $this->supplierAfm,
+            'supl_afm' => $this->supplierAfm,
             'buyer_afm' => $this->buyerAfm,
-            'representative_identity_type' => $this->representativeIdentityType,
-            'representative_identity_number' => $this->representativeIdentityNumber,
-            'representative_identity_mobile' => $this->representativeIdentityMobile,
+            'repr_identity_type' => $this->representativeIdentityType,
+            'repr_identity_no' => $this->representativeIdentityNumber,
+            'repr_mobile' => $this->representativeIdentityMobile,
             'otp_id' => $this->otpId,
-            'primary_transaction_id' => $this->primaryTransactionId,
-            'primary_transaction_justification' => $this->primaryTransactionJustification,
-            'transaction_date_time' => $this->transactionDateTime,
-            'transaction_previous_total_quantity' => $this->transactionPreviousTotalQuantity,
-            'transaction_previous_total_amount' => $this->transactionPreviousTotalAmount,
-            'transaction_previous_total_vat' => $this->transactionPreviousTotalVat,
-            'transaction_total_quantity' => $this->transactionTotalQuantity,
-            'transaction_total_amount' => $this->transactionTotalAmount,
-            'transaction_total_vat' => $this->transactionTotalVat,
-            'transaction_notes' => $this->transactionNotes
+            'primary_trans_id' => $this->primaryTransactionId,
+            'primary_trans_justification' => $this->primaryTransactionJustification,
+            'trans_datetime' => $this->transactionDateTime,
+            'trans_previous_total_qty' => $this->transactionPreviousTotalQuantity,
+            'trans_previous_total_amount' => $this->transactionPreviousTotalAmount,
+            'trans_previous_total_vat' => $this->transactionPreviousTotalVat,
+            'trans_total_qty' => $this->transactionTotalQuantity,
+            'trans_total_amount' => $this->transactionTotalAmount,
+            'trans_total_vat' => $this->transactionTotalVat,
+            'trans_notes' => $this->transactionNotes
         ];
     }
 

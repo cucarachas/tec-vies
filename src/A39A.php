@@ -7,6 +7,7 @@ use stdClass;
 use Tec\Vat\adapter\SoapAdapter;
 use Tec\Vat\builder\ItemBuilder;
 use Tec\Vat\builder\TransactionBuilder;
+use Tec\Vat\builder\TransactionOptionalBuilder;
 use Tec\Vat\exceptions\A39AException;
 use Tec\Vat\mapper\A39AMapper;
 use Tec\Vat\model\Transaction;
@@ -19,6 +20,7 @@ class A39A
         'vt39afpaSu1GetVatflag',
         'vt39afpaSu2VerifyBuyer',
         'vt39afpaSu3TransReprMan',
+        'vt39afpaSu4TransReprOpt'
     ];
     private $headers = [
         'namespace' => 'http://www.w3.org/2003/05/soap-envelope',
@@ -68,7 +70,7 @@ class A39A
      */
     public function verifyBuyer($vatCalledFor, $vatCalledBy,
                                 $representativeIdentityType, $representativeIdentityNumber,
-                                $representativeMobile)
+                                $representativeMobile): ?array
     {
         try {
             $response = $this->soapAdapter
@@ -85,24 +87,28 @@ class A39A
         }
     }
 
-    public function createMandatoryTransaction($transaction, $items) {
+    /**
+     * @param $transaction
+     * @param $items
+     * @param string $type
+     * @return array|null
+     * @throws A39AException
+     */
+    public function createTransaction($transaction, $items, string $type = "mandatory"): ?array
+    {
         try {
             $response = $this->soapAdapter
                 ->setClient($this->wsdl)
                 ->setHeaders($this->headers['namespace'], $this->headers['name'], self::getAuthHeaders())
-                ->setBody(self::getBody(__FUNCTION__,
-                    $this->buildTransaction($transaction),
+                ->setBody(self::getBody(__FUNCTION__ . ucfirst($type),
+                    $this->buildTransaction($transaction, $type),
                     $this->buildMultipleItems($items)))
-                ->call($this->methods[2]);
+                ->call($type == "mandatory" ? $this->methods[2] : $this->methods[3]);
 
-            return A39AMapper::convert(__FUNCTION__, StdConverter::stdToArray($response));
+            return A39AMapper::convert(__FUNCTION__ . ucfirst($type), StdConverter::stdToArray($response));
         } catch (Exception $e) {
             throw new A39AException($e->getMessage());
         }
-    }
-
-    public function createOptionalTransaction($array) {
-        // TODO: Implement createOptionalTransaction() method.
     }
 
     /**
@@ -133,10 +139,16 @@ class A39A
                         'as_on_datetime'     => date('Y-m-d\TH:i:s\Z')
                     ]
                 ];
-            case 'createMandatoryTransaction':
+            case 'createTransactionMandatory':
                 return [
                     'SU3_IN_REC'        => $args[0],
                     'SU3_IN_LINE_ITEMS' => self::getLineItemsBody($args[1])
+                ];
+
+            case 'createTransactionOptional':
+                return [
+                    'SU4_IN_REC'        => $args[0],
+                    'SU4_IN_LINE_ITEMS' => self::getLineItemsBody($args[1])
                 ];
 
             default:
@@ -180,9 +192,27 @@ class A39A
 
     /**
      * @param $_
+     * @param $type
+     * @return array
+     * @throws A39AException
+     */
+    private function buildTransaction($_, $type): array
+    {
+        switch ($type) {
+            case "mandatory":
+                return self::buildMandatoryTransaction($_);
+            case "optional":
+                return self::buildOptionalTransaction($_);
+            default:
+                throw new A39AException('Transaction type not found');
+        }
+    }
+
+    /**
+     * @param $_
      * @return array
      */
-    private function buildTransaction($_): array
+    private function buildMandatoryTransaction($_): array
     {
         return (new TransactionBuilder())
             ->supplierAfm($_['supplierAfm'])
@@ -201,6 +231,35 @@ class A39A
             ->transactionTotalAmount($_['transactionTotalAmount'])
             ->transactionTotalVat($_['transactionTotalVat'])
             ->transactionNotes($_['transactionNotes'])
+            ->build()
+            ->toArray();
+    }
+
+    /**
+     * @param $_
+     * @return array
+     */
+    private function buildOptionalTransaction($_): array
+    {
+        return (new TransactionOptionalBuilder())
+            ->supplierAfm($_['supplierAfm'])
+            ->buyerAfm($_['buyerAfm'])
+            ->representativeIdentityType($_['representativeIdentityType'])
+            ->representativeIdentityNumber($_['representativeIdentityNumber'])
+            ->representativeIdentityMobile($_['representativeIdentityMobile'])
+            ->otpId($_['otpId'])
+            ->primaryTransactionId($_['primaryTransactionId'])
+            ->primaryTransactionJustification($_['primaryTransactionJustification'])
+            ->transactionDateTime($_['transactionDateTime'])
+            ->transactionPreviousTotalQuantity($_['transactionPreviousTotalQuantity'])
+            ->transactionPreviousTotalAmount($_['transactionPreviousTotalAmount'])
+            ->transactionPreviousTotalVat($_['transactionPreviousTotalVat'])
+            ->transactionTotalQuantity($_['transactionTotalQuantity'])
+            ->transactionTotalAmount($_['transactionTotalAmount'])
+            ->transactionTotalVat($_['transactionTotalVat'])
+            ->transactionNotes($_['transactionNotes'])
+            ->buyerRejection($_['buyerRejection'])
+            ->representativeBypassMatching($_['representativeBypassMatching'])
             ->build()
             ->toArray();
     }
